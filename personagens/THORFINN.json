@@ -1,0 +1,9 @@
+{
+  "nome": "THORFINN",
+  "vida": 100,
+  "ataque": 20,
+  "tipo": "Guerreiro",
+  "extras": {
+    "defesa": 10
+  }
+}

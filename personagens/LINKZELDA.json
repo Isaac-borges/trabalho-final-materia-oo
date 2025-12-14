@@ -1,0 +1,9 @@
+{
+  "nome": "LINKZELDA",
+  "vida": 100,
+  "ataque": 10,
+  "tipo": "Arqueiro",
+  "extras": {
+    "ataque_multiplo": 3
+  }
+}
