@@ -1,0 +1,9 @@
+{
+  "nome": "50VIDA",
+  "vida": 50,
+  "ataque": 10,
+  "tipo": "Guerreiro",
+  "extras": {
+    "defesa": 20
+  }
+}

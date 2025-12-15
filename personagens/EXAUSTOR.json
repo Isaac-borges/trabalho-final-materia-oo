@@ -1,7 +1,7 @@
 {
-  "nome": "GANDALF",
+  "nome": "EXAUSTOR",
   "vida": 100,
   "ataque": 40,
-  "tipo": "Mago",
+  "tipo": "Exausto",
   "extras": {}
 }

@@ -15,7 +15,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NoManStanding = exports.ValueIsNotValid = exports.DeadCantBeAttacked = exports.DeadCantAttack = exports.CantAttackItself = exports.CharacterNameIsEqual = exports.AplicacaoException = exports.CharacterNotFound = exports.UnsuccessfulAttack = void 0;
+exports.GuardianCantAttack = exports.NoManStanding = exports.ValueIsNotValid = exports.DeadCantBeAttacked = exports.DeadCantAttack = exports.CantAttackItself = exports.CharacterNameIsEqual = exports.AplicacaoException = exports.CharacterNotFound = exports.UnsuccessfulAttack = void 0;
 var AplicacaoException = /** @class */ (function (_super) {
     __extends(AplicacaoException, _super);
     function AplicacaoException(message) {
@@ -115,3 +115,14 @@ var NoManStanding = /** @class */ (function (_super) {
     return NoManStanding;
 }(AplicacaoException));
 exports.NoManStanding = NoManStanding;
+var GuardianCantAttack = /** @class */ (function (_super) {
+    __extends(GuardianCantAttack, _super);
+    function GuardianCantAttack(message) {
+        var _this = _super.call(this, message) || this;
+        _this.name = "GuardianCantAttack";
+        Object.setPrototypeOf(_this, GuardianCantAttack.prototype);
+        return _this;
+    }
+    return GuardianCantAttack;
+}(UnsuccessfulAttack));
+exports.GuardianCantAttack = GuardianCantAttack;

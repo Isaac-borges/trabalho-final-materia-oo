@@ -70,6 +70,14 @@ class NoManStanding extends AplicacaoException {
     }
 }
 
+class GuardianCantAttack extends UnsuccessfulAttack {
+    constructor(message: string) {
+        super(message);
+        this.name = "GuardianCantAttack";
+        Object.setPrototypeOf(this, GuardianCantAttack.prototype);
+    }
+}
+
 export {
     UnsuccessfulAttack,
     CharacterNotFound,
@@ -80,4 +88,5 @@ export {
     DeadCantBeAttacked,
     ValueIsNotValid,
     NoManStanding,
+    GuardianCantAttack,
 };

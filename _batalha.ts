@@ -124,7 +124,7 @@ class Batalha {
         return novas;
     }
 
-    private encontrarProximoVivoIndex(index_inicial: number): number {
+    encontrarProximoVivoIndex(index_inicial: number): number {
         const n: number = this._personagens.length;
         if (n === 0) return -1;
         for (let i = 1; i <= n; i++) {
@@ -135,7 +135,7 @@ class Batalha {
         return -1;
     }
 
-    private avancarVez(): void {
+    avancarVez(): void {
         const prox = this.encontrarProximoVivoIndex(this._indexVez);
         if (prox === -1) {
             this._indexVez = 0;

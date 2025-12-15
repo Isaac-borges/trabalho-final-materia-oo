@@ -15,7 +15,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Patrulheiro = exports.Arqueiro = exports.Mago = exports.Guerreiro = exports.Personagem = void 0;
+exports.Guardiao = exports.Exausto = exports.Cidadao = exports.Patrulheiro = exports.Arqueiro = exports.Mago = exports.Guerreiro = exports.Personagem = void 0;
 var _acao_1 = require("./_acao");
 var exceptions_1 = require("./exceptions");
 var validate_1 = require("./validate");
@@ -31,7 +31,10 @@ var Personagem = /** @class */ (function (_super) {
         _this.validarValor(vida, 1, 100);
         _this._vida = vida;
         _this._vida_maxima = vida;
-        _this.validarValor(ataque, 1, 100);
+        if (_this instanceof Cidadao)
+            _this.validarValor(ataque, 0, 100);
+        else
+            _this.validarValor(ataque, 1, 100);
         _this._ataque = ataque;
         return _this;
     }
@@ -39,6 +42,7 @@ var Personagem = /** @class */ (function (_super) {
         var acao_ataque;
         var dano_base = this.calcularDano();
         var descricao_ataque;
+        var dano_final = this.causarDano(alvo, dano_base);
         if (!alvo.estaVivo()) {
             throw new exceptions_1.DeadCantBeAttacked("O ALVO ESTÁ MORTO!");
         }
@@ -48,12 +52,17 @@ var Personagem = /** @class */ (function (_super) {
         if (this.nome == alvo.nome) {
             throw new exceptions_1.CantAttackItself("NÃO PODE ATACAR A SI MESMO!");
         }
-        var dano_final = this.causarDano(alvo, dano_base);
-        descricao_ataque = this.gerarDescricaoAtaque(alvo, dano_final);
+        if (this instanceof Guardiao) {
+            throw new exceptions_1.GuardianCantAttack("GUARDIÃO NÃO PODE ATACAR");
+        }
         if (dano_final === 0) {
-            descricao_ataque = "\nO ATAQUE DE ".concat(this.nome_pad, " FOI APARADO POR ").concat(alvo.nome_pad, "!\n");
+            if (this instanceof Guardiao)
+                descricao_ataque = "".concat(this.nome, " \u00C9 UM GUARDI\u00C3O E N\u00C3O P\u00D4DE ATACAR");
+            else
+                descricao_ataque = "\nO ATAQUE DE ".concat(this.nome_pad, " FOI APARADO POR ").concat(alvo.nome_pad, "!\n");
             alvo.registrarAcao(new _acao_1.Acao(++alvo.id_acao, alvo, this, "\n".concat(alvo.nome_pad, " DEFENDEU UM ATAQUE DE ").concat(this.nome_pad, "!"), 0, new Date()));
         }
+        descricao_ataque = this.gerarDescricaoAtaque(alvo, dano_final);
         acao_ataque = new _acao_1.Acao(++this._id_acao, this, alvo, descricao_ataque, dano_final, new Date());
         this.registrarAcao(acao_ataque);
         return acao_ataque;
@@ -152,6 +161,9 @@ var Personagem = /** @class */ (function (_super) {
         get: function () {
             return this._ataque;
         },
+        set: function (valor) {
+            this._ataque = valor;
+        },
         enumerable: false,
         configurable: true
     });
@@ -175,6 +187,13 @@ var Personagem = /** @class */ (function (_super) {
     Object.defineProperty(Personagem.prototype, "acoes", {
         get: function () {
             return this._historico;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(Personagem.prototype, "tipoPersonagem", {
+        get: function () {
+            return this.constructor.name;
         },
         enumerable: false,
         configurable: true
@@ -350,3 +369,45 @@ var Patrulheiro = /** @class */ (function (_super) {
     return Patrulheiro;
 }(Personagem));
 exports.Patrulheiro = Patrulheiro;
+var Cidadao = /** @class */ (function (_super) {
+    __extends(Cidadao, _super);
+    function Cidadao(id, nome, vida, ataque) {
+        if (vida === void 0) { vida = 1; }
+        if (ataque === void 0) { ataque = 0; }
+        return _super.call(this, id, nome, vida, ataque) || this;
+    }
+    Cidadao.prototype.gerarDescricaoAtaque = function (alvo, dano) {
+        var descricao_ataque = "".concat(this.nome_pad, " ATACOU ").concat(alvo.nome_pad, "!\nE FOI INUTIL....");
+        return descricao_ataque;
+    };
+    return Cidadao;
+}(Personagem));
+exports.Cidadao = Cidadao;
+var Guardiao = /** @class */ (function (_super) {
+    __extends(Guardiao, _super);
+    function Guardiao() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Guardiao.prototype.causarDano = function (alvo, dano) {
+        throw new exceptions_1.GuardianCantAttack("GUARDIÃO NÃO PODE ATACAR");
+    };
+    return Guardiao;
+}(Personagem));
+exports.Guardiao = Guardiao;
+var Exausto = /** @class */ (function (_super) {
+    __extends(Exausto, _super);
+    function Exausto(id, nome, vida, ataque) {
+        return _super.call(this, id, nome, vida, ataque) || this;
+    }
+    Exausto.prototype.causarDano = function (alvo, dano_base) {
+        var dano_final = dano_base;
+        this.ataque = Math.floor(this.ataque / 2);
+        return alvo.receberDano(dano_final);
+    };
+    Exausto.prototype.gerarDescricaoAtaque = function (alvo, dano) {
+        var descricao_ataque = "".concat(this.nome_pad, " ATACOU ").concat(alvo.nome_pad, " E TIROU ").concat(dano, " DE VIDA!\n").concat(this.nome_pad, " SE CANSOU\nATAQUE DIMINUIDO PELA METADE.");
+        return descricao_ataque;
+    };
+    return Exausto;
+}(Personagem));
+exports.Exausto = Exausto;

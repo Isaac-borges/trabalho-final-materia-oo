@@ -38,6 +38,9 @@ var InterfaceUsuario = /** @class */ (function () {
         console.log("2 - MAGO");
         console.log("3 - ARQUEIRO");
         console.log("4 - PATRULHEIRO");
+        console.log("5 - CIDADÃO");
+        console.log("6 - GUARDIÃO");
+        console.log("7 - EXAUSTO");
         console.log("0 - CANCELAR");
         console.log("-------------------------------------");
     };

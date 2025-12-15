@@ -5,6 +5,9 @@ import {
     Mago,
     Arqueiro,
     Patrulheiro,
+    Cidadao,
+    Guardiao,
+    Exausto,
 } from "./_personagem";
 import { Batalha } from "./_batalha";
 import {
@@ -12,6 +15,7 @@ import {
     NoManStanding,
     CharacterNotFound,
     CharacterNameIsEqual,
+    GuardianCantAttack,
 } from "./exceptions";
 import { InterfaceUsuario } from "./_menu";
 
@@ -126,9 +130,13 @@ class App {
                             console.log(err.message);
                             this._batalha_atual = null;
                             opcao = 0;
-                        } else {
-                            throw err;
                         }
+                        if (err instanceof GuardianCantAttack) {
+                            this._batalha_atual?.avancarVez();
+                        } else {
+                            this.tratarErro(err);
+                            this._batalha_atual?.avancarVez();
+                        } //GUARDA NÃO PASSA A VEZ;
                     }
                     break;
 
@@ -136,7 +144,7 @@ class App {
                     console.clear();
                     for (let personagem of this._batalha_atual?.listarPersonagens()!) {
                         console.log(
-                            `NOME :${personagem.nome_pad}\nVIDA: ${personagem.vida}/${personagem.vida_maxima}\nATAQUE: ${personagem.ataque}`,
+                            `NOME :${personagem.nome_pad}\nVIDA: ${personagem.vida}/${personagem.vida_maxima}\nATAQUE: ${personagem.ataque}\nTIPO: ${personagem.tipoPersonagem}`,
                         );
                         if (personagem instanceof Guerreiro) {
                             console.log(`DEFESA: ${personagem.defesa}`);
@@ -246,6 +254,12 @@ class App {
         const nome = String(prompt("Nome (1 a 9 chars): ")).toUpperCase();
         const vida = Number(prompt("Vida (1 a 100): "));
         const ataque = Number(prompt("Ataque: "));
+        if (tipo === 5) {
+            console.log("VIDA DO CIDADÃO IGNORADA!");
+        }
+        if (tipo === 5) {
+            console.log("ATAQUE DO CIDADÃO IGNORADO!");
+        }
 
         try {
             let personagem: Personagem;
@@ -276,6 +290,12 @@ class App {
                     vida,
                     ataque,
                 );
+            } else if (tipo === 5) {
+                personagem = new Cidadao(this.gerarID(), nome, 1, 0);
+            } else if (tipo === 6) {
+                personagem = new Guardiao(this.gerarID(), nome, ataque, vida);
+            } else if (tipo === 7) {
+                personagem = new Exausto(this.gerarID(), nome, vida, ataque);
             } else {
                 console.log("TIPO INVÁLIDO!");
                 return;
@@ -545,6 +565,29 @@ class App {
                     data.ataque,
                 );
 
+            case "Cidadao":
+                return new Cidadao(
+                    this.gerarID(),
+                    data.nome,
+                    data.vida,
+                    data.ataque,
+                );
+
+            case "Guardiao":
+                return new Guardiao(
+                    this.gerarID(),
+                    data.nome,
+                    data.vida,
+                    data.ataque,
+                );
+
+            case "Exausto":
+                return new Exausto(
+                    this.gerarID(),
+                    data.nome,
+                    data.vida,
+                    data.ataque,
+                );
             default:
                 throw new AplicacaoException("TIPO DE PERSONAGEM INVÁLIDO!");
         }

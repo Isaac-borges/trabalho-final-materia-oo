@@ -53,7 +53,7 @@ var App = /** @class */ (function () {
         this.continuarBatalha();
     };
     App.prototype.continuarBatalha = function () {
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e, _f;
         var opcao = -1;
         do {
             console.clear();
@@ -81,8 +81,8 @@ var App = /** @class */ (function () {
                     }
                     this.opcaoAtacar();
                     console.log("\nSITUAÇÃO APÓS O TURNO: ");
-                    for (var _i = 0, _e = this._batalha_atual.listarPersonagens(); _i < _e.length; _i++) {
-                        var personagem = _e[_i];
+                    for (var _i = 0, _g = this._batalha_atual.listarPersonagens(); _i < _g.length; _i++) {
+                        var personagem = _g[_i];
                         console.log("".concat(personagem.nome_pad, " : ").concat(personagem.vida, "/").concat(personagem.vida_maxima, " HP"));
                     }
                     try {
@@ -101,16 +101,20 @@ var App = /** @class */ (function () {
                             this._batalha_atual = null;
                             opcao = 0;
                         }
+                        if (err instanceof exceptions_1.GuardianCantAttack) {
+                            (_b = this._batalha_atual) === null || _b === void 0 ? void 0 : _b.avancarVez();
+                        }
                         else {
-                            throw err;
+                            this.tratarErro(err);
+                            (_c = this._batalha_atual) === null || _c === void 0 ? void 0 : _c.avancarVez();
                         }
                     }
                     break;
                 case 2:
                     console.clear();
-                    for (var _f = 0, _g = (_b = this._batalha_atual) === null || _b === void 0 ? void 0 : _b.listarPersonagens(); _f < _g.length; _f++) {
-                        var personagem = _g[_f];
-                        console.log("NOME :".concat(personagem.nome_pad, "\nVIDA: ").concat(personagem.vida, "/").concat(personagem.vida_maxima, "\nATAQUE: ").concat(personagem.ataque));
+                    for (var _h = 0, _j = (_d = this._batalha_atual) === null || _d === void 0 ? void 0 : _d.listarPersonagens(); _h < _j.length; _h++) {
+                        var personagem = _j[_h];
+                        console.log("NOME :".concat(personagem.nome_pad, "\nVIDA: ").concat(personagem.vida, "/").concat(personagem.vida_maxima, "\nATAQUE: ").concat(personagem.ataque, "\nTIPO: ").concat(personagem.tipoPersonagem));
                         if (personagem instanceof _personagem_1.Guerreiro) {
                             console.log("DEFESA: ".concat(personagem.defesa));
                         }
@@ -121,7 +125,7 @@ var App = /** @class */ (function () {
                             console.log("VIDA DO COMPANHEIRO ANIMAL: ".concat(personagem.vida_companheiro_atual, "/").concat(personagem.vida_companheiro_max));
                         }
                     }
-                    if (!((_c = this._batalha_atual) === null || _c === void 0 ? void 0 : _c.isIniciada())) {
+                    if (!((_e = this._batalha_atual) === null || _e === void 0 ? void 0 : _e.isIniciada())) {
                         var resp = prompt("\nDESEJA ADICIONAR PERSONAGEM? (s/n): ");
                         console.clear();
                         if (resp.toLowerCase() === "s")
@@ -149,7 +153,7 @@ var App = /** @class */ (function () {
                     }
                 case 4:
                     console.clear();
-                    if ((_d = this._batalha_atual) === null || _d === void 0 ? void 0 : _d.isIniciada()) {
+                    if ((_f = this._batalha_atual) === null || _f === void 0 ? void 0 : _f.isIniciada()) {
                         this.consultarLinhaDoTempo();
                     }
                     break;
@@ -203,6 +207,12 @@ var App = /** @class */ (function () {
         var nome = String(prompt("Nome (1 a 9 chars): ")).toUpperCase();
         var vida = Number(prompt("Vida (1 a 100): "));
         var ataque = Number(prompt("Ataque: "));
+        if (tipo === 5) {
+            console.log("VIDA DO CIDADÃO IGNORADA!");
+        }
+        if (tipo === 5) {
+            console.log("ATAQUE DO CIDADÃO IGNORADO!");
+        }
         try {
             var personagem = void 0;
             if (tipo === 1) {
@@ -218,6 +228,15 @@ var App = /** @class */ (function () {
             }
             else if (tipo === 4) {
                 personagem = new _personagem_1.Patrulheiro(this.gerarID(), nome, vida, ataque);
+            }
+            else if (tipo === 5) {
+                personagem = new _personagem_1.Cidadao(this.gerarID(), nome, 1, 0);
+            }
+            else if (tipo === 6) {
+                personagem = new _personagem_1.Guardiao(this.gerarID(), nome, ataque, vida);
+            }
+            else if (tipo === 7) {
+                personagem = new _personagem_1.Exausto(this.gerarID(), nome, vida, ataque);
             }
             else {
                 console.log("TIPO INVÁLIDO!");
@@ -412,6 +431,12 @@ var App = /** @class */ (function () {
                 return new _personagem_1.Arqueiro(this.gerarID(), data.nome, data.vida, data.ataque, data.extras.ataque_multiplo);
             case "Patrulheiro":
                 return new _personagem_1.Patrulheiro(this.gerarID(), data.nome, data.vida, data.ataque);
+            case "Cidadao":
+                return new _personagem_1.Cidadao(this.gerarID(), data.nome, data.vida, data.ataque);
+            case "Guardiao":
+                return new _personagem_1.Guardiao(this.gerarID(), data.nome, data.vida, data.ataque);
+            case "Exausto":
+                return new _personagem_1.Exausto(this.gerarID(), data.nome, data.vida, data.ataque);
             default:
                 throw new exceptions_1.AplicacaoException("TIPO DE PERSONAGEM INVÁLIDO!");
         }

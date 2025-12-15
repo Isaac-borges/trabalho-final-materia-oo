@@ -7,6 +7,7 @@ import {
     DeadCantBeAttacked,
     CantAttackItself,
     ValueIsNotValid,
+    GuardianCantAttack,
 } from "./exceptions";
 
 import { Validate } from "./validate";
@@ -28,7 +29,8 @@ class Personagem extends Validate {
         this.validarValor(vida, 1, 100);
         this._vida = vida;
         this._vida_maxima = vida;
-        this.validarValor(ataque, 1, 100);
+        if (this instanceof Cidadao) this.validarValor(ataque, 0, 100);
+        else this.validarValor(ataque, 1, 100);
         this._ataque = ataque;
     }
 
@@ -36,6 +38,8 @@ class Personagem extends Validate {
         let acao_ataque: Acao;
         let dano_base: number = this.calcularDano();
         let descricao_ataque: string;
+
+        let dano_final = this.causarDano(alvo, dano_base);
 
         if (!alvo.estaVivo()) {
             throw new DeadCantBeAttacked("O ALVO ESTÁ MORTO!");
@@ -49,12 +53,15 @@ class Personagem extends Validate {
             throw new CantAttackItself("NÃO PODE ATACAR A SI MESMO!");
         }
 
-        let dano_final = this.causarDano(alvo, dano_base);
-
-        descricao_ataque = this.gerarDescricaoAtaque(alvo, dano_final);
+        if (this instanceof Guardiao) {
+            throw new GuardianCantAttack("GUARDIÃO NÃO PODE ATACAR");
+        }
 
         if (dano_final === 0) {
-            descricao_ataque = `\nO ATAQUE DE ${this.nome_pad} FOI APARADO POR ${alvo.nome_pad}!\n`;
+            if (this instanceof Guardiao)
+                descricao_ataque = `${this.nome} É UM GUARDIÃO E NÃO PÔDE ATACAR`;
+            else
+                descricao_ataque = `\nO ATAQUE DE ${this.nome_pad} FOI APARADO POR ${alvo.nome_pad}!\n`;
 
             alvo.registrarAcao(
                 new Acao(
@@ -68,6 +75,8 @@ class Personagem extends Validate {
             );
         }
 
+        descricao_ataque = this.gerarDescricaoAtaque(alvo, dano_final);
+
         acao_ataque = new Acao(
             ++this._id_acao,
             this,
@@ -78,6 +87,7 @@ class Personagem extends Validate {
         );
 
         this.registrarAcao(acao_ataque);
+
         return acao_ataque;
     }
 
@@ -188,6 +198,14 @@ class Personagem extends Validate {
 
     get acoes(): Acao[] {
         return this._historico;
+    }
+
+    set ataque(valor: number) {
+        this._ataque = valor;
+    }
+
+    get tipoPersonagem() {
+        return this.constructor.name;
     }
 }
 
@@ -392,4 +410,55 @@ class Patrulheiro extends Personagem {
     }
 }
 
-export { Personagem, Guerreiro, Mago, Arqueiro, Patrulheiro };
+class Cidadao extends Personagem {
+    constructor(
+        id: number,
+        nome: string,
+        vida: number = 1,
+        ataque: number = 0,
+    ) {
+        super(id, nome, vida, ataque);
+    }
+
+    gerarDescricaoAtaque(alvo: Personagem, dano: number): string {
+        let descricao_ataque: string = `${this.nome_pad} ATACOU ${alvo.nome_pad}!\nE FOI INUTIL....`;
+
+        return descricao_ataque;
+    }
+}
+
+class Guardiao extends Personagem {
+    causarDano(alvo: Personagem, dano: number): number {
+        throw new GuardianCantAttack("GUARDIÃO NÃO PODE ATACAR");
+    }
+}
+
+class Exausto extends Personagem {
+    constructor(id: number, nome: string, vida: number, ataque: number) {
+        super(id, nome, vida, ataque);
+    }
+
+    causarDano(alvo: Personagem, dano_base: number): number {
+        let dano_final: number = dano_base;
+
+        this.ataque = Math.floor(this.ataque / 2);
+
+        return alvo.receberDano(dano_final);
+    }
+
+    gerarDescricaoAtaque(alvo: Personagem, dano: number): string {
+        let descricao_ataque: string = `${this.nome_pad} ATACOU ${alvo.nome_pad} E TIROU ${dano} DE VIDA!\n${this.nome_pad} SE CANSOU\nATAQUE DIMINUIDO PELA METADE.`;
+
+        return descricao_ataque;
+    }
+}
+export {
+    Personagem,
+    Guerreiro,
+    Mago,
+    Arqueiro,
+    Patrulheiro,
+    Cidadao,
+    Exausto,
+    Guardiao,
+};
