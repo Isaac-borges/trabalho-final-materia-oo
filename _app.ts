@@ -345,7 +345,10 @@ class App {
             console.clear();
             switch (opcao) {
                 case 1:
+                    console.clear();
                     this.printarBatalhas();
+                    prompt("PRESSIONE <ENTER> PARA CONTINUAR");
+                    console.clear();
 
                     break;
                 case 2:
@@ -356,16 +359,33 @@ class App {
                             let opcao_batalha = Number(
                                 prompt("ESCOLHA A BATALHA: "),
                             );
-
+                            console.clear();
                             if (
                                 opcao_batalha >= 1 &&
                                 opcao_batalha <= this._batalhas.length
                             ) {
                                 let batalha_escolhida =
                                     this._batalhas[opcao_batalha - 1]!;
-                                console.log(
-                                    batalha_escolhida.listarPersonagens(),
-                                );
+                                for (let personagem of batalha_escolhida?.listarPersonagens()!) {
+                                    console.log(
+                                        `NOME :${personagem.nome_pad}\nVIDA: ${personagem.vida}/${personagem.vida_maxima}\nATAQUE: ${personagem.ataque}`,
+                                    );
+                                    if (personagem instanceof Guerreiro) {
+                                        console.log(
+                                            `DEFESA: ${personagem.defesa}`,
+                                        );
+                                    } else if (personagem instanceof Arqueiro) {
+                                        console.log(
+                                            `ATAQUE MULTIPLO: ${personagem.ataque_multiplo}`,
+                                        );
+                                    } else if (
+                                        personagem instanceof Patrulheiro
+                                    ) {
+                                        console.log(
+                                            `VIDA DO COMPANHEIRO ANIMAL: ${personagem.vida_companheiro_atual}/${personagem.vida_companheiro_max}`,
+                                        );
+                                    }
+                                }
                             }
                         }
                     } else {
@@ -386,11 +406,16 @@ class App {
                             }
                         }
                     }
+                    prompt("PRESSIONE <ENTER> PARA CONTINUAR");
+                    console.clear();
                     break;
                 case 3:
+                    console.clear();
                     this.consultarAcoesDePersonagem();
+                    prompt("PRESSIONE <ENTER> PARA CONTINUAR");
                     break;
                 case 0:
+                    console.clear();
                     break;
                 default:
                     console.log("OPÇÃO INVÁLIDA!");

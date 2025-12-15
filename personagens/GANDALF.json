@@ -1,0 +1,7 @@
+{
+  "nome": "GANDALF",
+  "vida": 100,
+  "ataque": 25,
+  "tipo": "Mago",
+  "extras": {}
+}

@@ -1,0 +1,9 @@
+{
+  "nome": "KSANTE",
+  "vida": 100,
+  "ataque": 25,
+  "tipo": "Guerreiro",
+  "extras": {
+    "defesa": 10
+  }
+}
